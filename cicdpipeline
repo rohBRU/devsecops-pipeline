@@ -1,0 +1,30 @@
+name: CI/CD Pipeline for Node.js App
+
+on:
+  push:
+    branches:
+      - main   # This workflow runs automatically whenever code is pushed to the 'main' branch.
+
+jobs:
+  build:
+    runs-on: ubuntu-latest       # This tells GitHub Actions to use the latest Ubuntu Linux environment to run the job.
+
+    steps:
+      - uses: actions/checkout@v3    # This action checks out your repository code into the workflow runner so the pipeline can access it.
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3    # This installs and configures Node.js (version specified below) on the runner.
+        with:
+          node-version: '16'           # Specifies which version of Node.js to install (in this case, version 16).
+
+      - name: Install dependencies
+        run: npm install               # This command installs all project dependencies listed in package.json.
+
+      - name: Build
+        run: npm run build             # This runs the build script defined in package.json (usually compiles or bundles your app).
+
+      - name: Deploy to server
+        env:
+          DEPLOY_KEY: 'abc123-super-secret-key'  # This sets an environment variable (e.g., secret key for deployment authentication).
+        run: scp -r ./build user@server:/var/www/app  # This copies the 'build' folder to your remote server using SCP (secure copy).
+
